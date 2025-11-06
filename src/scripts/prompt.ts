@@ -6,26 +6,34 @@ export function buildReadmePrompt(
   },
   trimmedContext: string
 ) {
-  return `Write a concise, production-ready README.md for this repo.
+  return `Generate a concise, well-structured README.md for this repo.
 
-Must include:
-- Title + 1–2 line value prop
-- Features
-- Tech stack (auto-detect)
-- Quickstart (install/run/test)
-- Configuration
-- Examples
-- Contributing + License
-Use realistic commands from files. If uncertain, add TODOs. Keep it tight.
-IMPORTANT: End the README with: <!-- END_OF_README -->
+### Must Include
+- Project title + 1–2 line tagline  
+- Short overview  
+- Features (bulleted)  
+- Tech stack (detect from code)  
+- Quickstart (install, run, test)  
+- Configuration / Env vars  
+- Example usage  
+- Contributing + License  
+- End with <!-- END_OF_README -->
 
-Repo: ${meta.repo}
-Branch: ${meta.branch}
-Description: ${meta.description ?? "(none)"}
+### Rules
+- Use clean Markdown.  
+- Be realistic — use real commands from files.  
+- Add TODO if something is missing.  
+- Keep it brief and developer-friendly.  
+- No extra commentary outside the README.  
 
-Context (trimmed):
----
+Repo: ${meta.repo}  
+Branch: ${meta.branch}  
+Description: ${meta.description ?? "(none)"}  
+
+### Context
+\`\`\`
 ${trimmedContext}
----
-Return ONLY the README.md content and end with <!-- END_OF_README -->.`;
+\`\`\`
+
+Return only the README content and end with <!-- END_OF_README -->.`;
 }
