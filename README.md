@@ -1,5 +1,5 @@
 # ReadMeForge
-
+<img width="1904" height="951" alt="Screenshot 2025-11-06 191813" src="https://github.com/user-attachments/assets/6c7bd3aa-1103-4b63-8d50-75a5dd759668" />
 AI-Powered README Generation for Your GitHub Repositories.
 
 ## Overview
@@ -89,9 +89,6 @@ yarn dev
 ```
 
 The application will typically be available at `http://localhost:5173` (or another port if 5173 is in use).
-
-### screenshots
-<img width="1904" height="951" alt="Screenshot 2025-11-06 191813" src="https://github.com/user-attachments/assets/6c7bd3aa-1103-4b63-8d50-75a5dd759668" />
 
 
 ## Usage
