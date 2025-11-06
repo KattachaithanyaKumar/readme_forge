@@ -9,16 +9,16 @@ interface ToggleProps {
 const Toggle = ({ option1, option2, onToggle }: ToggleProps) => {
   const [selected, setSelected] = useState(option1);
 
-  const select = (value: string) => {
-    if (value === selected) return;
-    setSelected(value);
-    onToggle?.(value);
+  const toggle = () => {
+    const next = selected === option1 ? option2 : option1;
+    setSelected(next);
+    onToggle?.(next);
   };
 
   const onKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
     if (e.key === "ArrowRight" || e.key === "ArrowLeft") {
       e.preventDefault();
-      select(selected === option1 ? option2 : option1);
+      toggle();
     }
   };
 
@@ -42,21 +42,15 @@ const Toggle = ({ option1, option2, onToggle }: ToggleProps) => {
       role="tablist"
       aria-label="Toggle"
       onKeyDown={onKeyDown}
-      className="
-        w-full sm:w-fit
-        bg-(--white-5) border border-(--white-10) p-1 rounded-xl
-        select-none
-        flex
-      "
+      className="w-full sm:w-fit bg-(--white-5) border border-(--white-10) p-1 rounded-xl select-none flex"
     >
-      {/* Make each button flex-1 on mobile so the control fills width */}
       <button
         type="button"
         role="tab"
         aria-selected={selected === option1}
         aria-pressed={selected === option1}
         className={`flex-1 sm:flex-none ${btn1}`}
-        onClick={() => select(option1)}
+        onClick={toggle}
       >
         {option1}
       </button>
@@ -67,7 +61,7 @@ const Toggle = ({ option1, option2, onToggle }: ToggleProps) => {
         aria-selected={selected === option2}
         aria-pressed={selected === option2}
         className={`flex-1 sm:flex-none ${btn2}`}
-        onClick={() => select(option2)}
+        onClick={toggle}
       >
         {option2}
       </button>
