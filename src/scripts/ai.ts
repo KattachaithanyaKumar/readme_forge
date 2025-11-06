@@ -1,9 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
-const API_KEY =
-  (import.meta.env.VITE_GEMINI_API_KEY as string) ||
-  "AIzaSyA1LlfAwUp2Mv4SavUDG6yXXuji9l295eg";
+const API_KEY = import.meta.env.VITE_GEMINI_API_KEY as string;
 const MODEL = "gemini-2.5-flash";
 const MAX_OUTPUT_TOKENS = 2200;
 const MAX_PASSES = 3;
@@ -12,20 +10,19 @@ const END_MARK = "<!-- END_OF_README -->";
 const genAI = new GoogleGenerativeAI(API_KEY);
 
 async function* streamOnce(prompt: string) {
-  console.log(API_KEY);
   const model = genAI.getGenerativeModel({
     model: MODEL,
     generationConfig: { maxOutputTokens: MAX_OUTPUT_TOKENS, temperature: 0.2 },
   });
+
   const stream = await model.generateContentStream({
     contents: [{ role: "user", parts: [{ text: prompt }] }],
   });
+
   for await (const chunk of stream.stream) {
-    const text =
-      chunk.candidates?.[0]?.content?.parts
-        ?.map((p: any) => ("text" in p ? p.text : ""))
-        .join("") ?? "";
+    const text = chunk.text(); // ✅ incremental delta
     if (text) yield text;
+    if (text) console.log();
   }
 }
 
