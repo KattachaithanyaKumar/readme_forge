@@ -1,5 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { IoMdClose, IoMdKey, IoLogoGithub } from "react-icons/io";
+import { useAppDispatch, useAppSelector } from "../hooks";
+import {
+  setApiKey as setApiKeyAction,
+  setGithubToken as setGithubTokenAction,
+  clearSettings,
+} from "../store/settingsSlice";
+import toast from "react-hot-toast";
 
 interface ModalProps {
   isOpen: boolean;
@@ -10,6 +17,19 @@ interface ModalProps {
 const Modal: React.FC<ModalProps> = ({ isOpen, onClose, onSave }) => {
   const [apiKey, setApiKey] = useState("");
   const [githubToken, setGithubToken] = useState("");
+
+  const dispatch = useAppDispatch();
+  const { apiKey: savedApiKey, githubToken: savedGithubToken } = useAppSelector(
+    (s) => s.settings
+  );
+
+  // Prefill inputs from Redux when modal opens
+  useEffect(() => {
+    if (isOpen) {
+      setApiKey(savedApiKey ?? "");
+      setGithubToken(savedGithubToken ?? "");
+    }
+  }, [isOpen, savedApiKey, savedGithubToken]);
 
   // Close modal on ESC
   useEffect(() => {
@@ -24,7 +44,16 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, onSave }) => {
 
   const handleSave = () => {
     onSave?.({ apiKey, githubToken });
+
+    if (apiKey.trim()) dispatch(setApiKeyAction(apiKey.trim()));
+    if (githubToken.trim()) dispatch(setGithubTokenAction(githubToken.trim()));
+
+    toast.success("Settings saved");
     onClose();
+  };
+
+  const reset = () => {
+    dispatch(clearSettings());
   };
 
   return (
@@ -57,7 +86,7 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, onSave }) => {
         {/* Content */}
         <div className="p-6 text-(--white)">
           {/* API Key */}
-          <label className="text-sm text-(--text-light)">Custom API Key</label>
+          <label className="text-sm text-(--text-light)">Gemini API Key</label>
           <div className="flex items-center border border-(--white-20) rounded-xl my-2 overflow-hidden bg-(--white-5)">
             <div className="p-3 bg-(--white-10)">
               <IoMdKey size={20} />
@@ -90,10 +119,10 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, onSave }) => {
         {/* Footer */}
         <div className="border-t border-(--white-10) p-4 flex justify-end gap-3">
           <button
-            onClick={onClose}
+            onClick={reset}
             className="px-4 py-2 bg-(--white-10) hover:bg-(--white-20) rounded-xl text-(--text-light) transition-colors cursor-pointer"
           >
-            Cancel
+            Reset
           </button>
           <button
             onClick={handleSave}

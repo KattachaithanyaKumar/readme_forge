@@ -1,4 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { getKeysFromStore } from "../scripts/keys";
+
 export type RepoId = { owner: string; name: string };
 export type RepoFile = { path: string; size: number; content?: string };
 export type RepoSnapshot = {
@@ -9,6 +11,16 @@ export type RepoSnapshot = {
 };
 
 const GITHUB_API = "https://api.github.com";
+
+async function j<T>(url: string, token?: string): Promise<T> {
+  const headers: Record<string, string> = {
+    Accept: "application/vnd.github+json",
+  };
+  if (token) headers.Authorization = `Bearer ${token}`;
+  const res = await fetch(url, { headers });
+  if (!res.ok) throw new Error(`${res.status} ${res.statusText}: ${url}`);
+  return res.json();
+}
 
 export function parseRepoUrl(input: string): RepoId | null {
   try {
@@ -25,15 +37,10 @@ export function parseRepoUrl(input: string): RepoId | null {
   }
 }
 
-async function j<T>(url: string, token?: string): Promise<T> {
-  const res = await fetch(url, {
-    headers: token ? { Authorization: `Bearer ${token}` } : undefined,
-  });
-  if (!res.ok) throw new Error(`${res.status} ${res.statusText}: ${url}`);
-  return res.json();
-}
-
-export async function getRepoMeta(id: RepoId, token?: string) {
+export async function getRepoMeta(
+  id: RepoId,
+  token = getKeysFromStore().githubToken
+) {
   const data = await j<any>(
     `${GITHUB_API}/repos/${id.owner}/${id.name}`,
     token
@@ -50,7 +57,7 @@ type TreeResp = { tree: TreeItem[] };
 export async function getTree(
   id: RepoId,
   branch: string,
-  token?: string
+  token = getKeysFromStore().githubToken
 ): Promise<TreeResp> {
   return j<TreeResp>(
     `${GITHUB_API}/repos/${id.owner}/${id.name}/git/trees/${encodeURIComponent(
@@ -119,7 +126,7 @@ function importance(p: string): number {
 
 export async function fetchRepoSnapshot(
   input: string,
-  token?: string
+  token = getKeysFromStore().githubToken
 ): Promise<RepoSnapshot> {
   const id = parseRepoUrl(input);
   if (!id)
@@ -144,7 +151,9 @@ export async function fetchRepoSnapshot(
   for (const f of candidates) {
     const raw = `https://raw.githubusercontent.com/${id.owner}/${id.name}/${defaultBranch}/${f.path}`;
     try {
-      const res = await fetch(raw);
+      const res = await fetch(raw, {
+        headers: token ? { Authorization: `Bearer ${token}` } : undefined,
+      });
       if (!res.ok) continue;
       let text = await res.text();
       if (text.length > PER_FILE)

@@ -1,15 +1,24 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { GoogleGenerativeAI } from "@google/generative-ai";
+import { getKeysFromStore } from "../scripts/keys";
 
-const API_KEY = import.meta.env.VITE_GEMINI_API_KEY as string;
 const MODEL = "gemini-2.5-flash";
 const MAX_OUTPUT_TOKENS = 2200;
 const MAX_PASSES = 3;
 const END_MARK = "<!-- END_OF_README -->";
 
-const genAI = new GoogleGenerativeAI(API_KEY);
+// Remove the global: const genAI = new GoogleGenerativeAI(API_KEY);
 
 async function* streamOnce(prompt: string) {
+  const { apiKey } = getKeysFromStore();
+  console.log(apiKey);
+  if (!apiKey) {
+    throw new Error(
+      "No API key found. Add one in Settings or set VITE_GEMINI_API_KEY."
+    );
+  }
+
+  const genAI = new GoogleGenerativeAI(apiKey); // fresh key
   const model = genAI.getGenerativeModel({
     model: MODEL,
     generationConfig: { maxOutputTokens: MAX_OUTPUT_TOKENS, temperature: 0.2 },
@@ -20,9 +29,8 @@ async function* streamOnce(prompt: string) {
   });
 
   for await (const chunk of stream.stream) {
-    const text = chunk.text(); // ✅ incremental delta
+    const text = chunk.text();
     if (text) yield text;
-    if (text) console.log();
   }
 }
 
@@ -51,7 +59,5 @@ export async function* streamReadmeWithContinuation(initialPrompt: string) {
       yield chunk;
       if (acc.includes(END_MARK)) return;
     }
-
-    if (acc.includes(END_MARK)) return;
   }
 }

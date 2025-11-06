@@ -99,6 +99,8 @@ const App = () => {
           throw new Error(
             "GitHub API rate limit hit. Add a personal access token (classic, repo:read) in settings."
           );
+        } else {
+          throw new Error("Enter a valid Gemini API key");
         }
         throw e;
       }
