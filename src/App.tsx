@@ -79,9 +79,10 @@ const App = () => {
         );
 
         // 4) Stream README
+        setResult(""); // clear
         for await (const chunk of streamReadmeWithContinuation(prompt)) {
           if (abortRef.current.aborted) throw new Error("aborted");
-          setResult((prev) => prev + chunk);
+          setResult((prev) => prev + chunk); // append-only
         }
 
         // 5) Normalize: keep only one END mark at the end
