@@ -202,7 +202,7 @@ const App = () => {
 
         {/* Result */}
         <section id="result" className="mt-12 sm:mt-16">
-          <div className="max-w-[1000px] mx-auto text-left px-0 sm:px-2 flex items-center justify-between gap-20">
+          <div className="max-w-[1000px] mx-auto text-left px-0 sm:px-2 flex items-center justify-between gap-20 sm:gap-10">
             <Toggle
               option1="Preview"
               option2="Markdown"
@@ -264,7 +264,7 @@ const App = () => {
                 )
               ) : (
                 <div className="flex justify-center items-center flex-col h-[226px]">
-                  <h2 className="text-(--white) font-black">
+                  <h2 className="text-(--white) font-black text-center">
                     Your generated README will appear here...
                   </h2>
                   <p className="text-(--text-light) w-[60%] text-center">
