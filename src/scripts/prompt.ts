@@ -15,8 +15,7 @@ export function buildReadmePrompt(
 - Tech stack (detect from code)  
 - Quickstart (install, run, test)  
 - Configuration / Env vars  
-- Example usage  
-- Contributing + License  
+- License  
 - End with <!-- END_OF_README -->
 
 ### Rules

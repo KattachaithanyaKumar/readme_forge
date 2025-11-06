@@ -30,7 +30,6 @@ const App = () => {
   // Abort streaming safely when user navigates away/remounts
   const abortRef = useRef<{ aborted: boolean }>({ aborted: false });
   useEffect(() => {
-    console.log(import.meta.env.VITE_GEMINI_API_KEY);
     return () => {
       abortRef.current.aborted = true;
     };
